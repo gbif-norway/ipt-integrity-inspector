@@ -1,0 +1,18 @@
+name: Run IPT Inspector
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Runs at 8:00 AM every day
+
+jobs:
+  run-my-container:
+    runs-on: ubuntu-latest  # Specifies the runner environment.
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+
+    - name: Run a Docker container
+      run: |
+        docker pull your-image-name:your-tag  # Replace with your image name and tag.
+        docker run -e DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }} -e SETTINGS=$SETTINGS gbifnorway/ipt-integrity-inspector:latest
