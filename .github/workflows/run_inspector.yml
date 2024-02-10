@@ -14,5 +14,5 @@ jobs:
 
     - name: Run a Docker container
       run: |
-        docker pull your-image-name:your-tag  # Replace with your image name and tag.
+        docker pull gbifnorway/ipt-integrity-inspector:latest  # Replace with your image name and tag.
         docker run -e DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }} -e SETTINGS=$SETTINGS gbifnorway/ipt-integrity-inspector:latest
