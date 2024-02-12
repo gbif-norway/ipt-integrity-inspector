@@ -1,9 +1,9 @@
 name: Run IPT Inspector
 
 on:
+  push:  # Triggers the workflow on push events for any branch.
   schedule:
     - cron: '0 8 * * *'  # Runs at 8:00 AM every day
-
 jobs:
   run-my-container:
     runs-on: ubuntu-latest  # Specifies the runner environment.
@@ -15,4 +15,4 @@ jobs:
     - name: Run a Docker container
       run: |
         docker pull gbifnorway/ipt-integrity-inspector:latest  # Replace with your image name and tag.
-        docker run -e DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }} -e SETTINGS=${{ env.SETTINGS }} gbifnorway/ipt-integrity-inspector:latest
+        docker run -e DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }} -e SETTINGS=${{ vars.SETTINGS }} gbifnorway/ipt-integrity-inspector:latest
