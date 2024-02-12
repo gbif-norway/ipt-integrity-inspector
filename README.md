@@ -56,5 +56,3 @@ The action can be configured to run on a schedule using GitHub's cron syntax wit
 ## Contributing
 
 Contributions to the IPT Integrity Inspector are welcome! If you'd like to contribute, please fork the repository and create a pull request with your changes. For major changes, please open an issue first to discuss what you would like to change.
-
-Please ensure to update tests as appropriate and adhere to the project's code of conduct.
