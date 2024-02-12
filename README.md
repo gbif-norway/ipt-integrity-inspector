@@ -33,7 +33,7 @@ docker run -e DISCORD_WEBHOOK=<your_discord_webhook> -e SETTINGS=<your_settings_
 ```
 ### GitHub Actions
 
-For GitHub Actions deployment, add the following secret to your repository:
+For GitHub Actions deployment, fork this repository and add the following GitHub secret to your repository:
 
 - DISCORD_WEBHOOK: Your Discord webhook URL for notifications.
 
@@ -41,7 +41,7 @@ And following repository variable
 
 - SETTINGS: Your JSON configuration for IPT servers, with escape characters.
 
-The action can be configured to run on a schedule using GitHub's cron syntax within your workflow file.
+The action can be configured to run on a schedule using GitHub's cron syntax within your [workflow file](.github/workflows/run_inspector.yml).
 ## Usage
 ### Environment Variables
 
