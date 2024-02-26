@@ -34,6 +34,9 @@ class CheckDataset(luigi.Task):
         if data["results"]:
             latest_crawl = data["results"][0]  # The first result is always the latest
             finish_reason = latest_crawl["crawlInfo"]["finishReason"]
+            processStateOccurrence = latest_crawl["crawlInfo"]["processStateOccurrence"]
+            processStateChecklist = latest_crawl["crawlInfo"]["processStateChecklist"]
+
 
 
             # If the finish reason is acceptable, process as normal
@@ -53,6 +56,18 @@ class CheckDataset(luigi.Task):
                     Reason: {finish_reason}.\n\
                     Title: {dataset_title}\n\
                     Link: {registry_url}")
+
+            # Check the finish reason
+            if processStateOccurrence == "EMPTY" and processStateChecklist == "EMPTY":
+
+                # Notify with a descriptive message
+                self.send_discord_notification(f"Ingestion for dataset ID {self.dataset_id} did not finish normally.\n\
+                    processStateOccurrence and processStateChecklist are booth EMPTY\n\
+                    Reason: {finish_reason}.\n\
+                    Title: {dataset_title}\n\
+                    Link: {registry_url}\n\
+                    processStateOccurrence: {processStateOccurrence}\n\
+                    processStateChecklist: {processStateChecklist}")
 
             # Write these details to an output file or process them as needed
             with self.output().open('w') as outfile:
