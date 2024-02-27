@@ -1,9 +1,11 @@
+#%%
+import datetime
 import luigi
 import requests
 import json
 import datetime
 import os
-
+#%%
 class CheckDataset(luigi.Task):
     dataset_id = luigi.Parameter()
 
@@ -32,7 +34,24 @@ class CheckDataset(luigi.Task):
 
         # Focus on the latest crawl result
         if data["results"]:
-            latest_crawl = data["results"][0]  # The first result is always the latest
+            crawls = [{'result':x, 'date':datetime.datetime.fromisoformat(x['crawlInfo']['startedCrawling']).date()} for x in data['results']]
+            last_crawl_date = max([x['date'] for x in crawls])
+            last_crawls = [x for x in crawls if x['date'] == last_crawl_date]
+            if len(last_crawls) > 1:
+                for crawl in last_crawls:
+                    processStateOccurrence = crawl['result']["crawlInfo"]["processStateOccurrence"]
+                    processStateChecklist = crawl['result']["crawlInfo"]["processStateChecklist"]
+                    # Check the finish reason
+                    if processStateOccurrence == "EMPTY" and processStateChecklist == "EMPTY":
+                        self.send_discord_notification(f"Ingestion for dataset ID {self.dataset_id} did not finish normally.\n\
+                            processStateOccurrence and processStateChecklist are booth EMPTY\n\
+                            Reason: {finish_reason}.\n\
+                            Title: {dataset_title}\n\
+                            Link: {registry_url}\n\
+                            processStateOccurrence: {processStateOccurrence}\n\
+                            processStateChecklist: {processStateChecklist}")
+
+            latest_crawl = last_crawls[0]['result']  # The first result is always the latest
             finish_reason = latest_crawl["crawlInfo"]["finishReason"]
             processStateOccurrence = latest_crawl["crawlInfo"]["processStateOccurrence"]
             processStateChecklist = latest_crawl["crawlInfo"]["processStateChecklist"]
@@ -53,16 +72,6 @@ class CheckDataset(luigi.Task):
 
                 # Notify with a descriptive message
                 self.send_discord_notification(f"Ingestion for dataset ID {self.dataset_id} did not finish normally.\n\
-                    Reason: {finish_reason}.\n\
-                    Title: {dataset_title}\n\
-                    Link: {registry_url}")
-
-            # Check the finish reason
-            if processStateOccurrence == "EMPTY" and processStateChecklist == "EMPTY":
-
-                # Notify with a descriptive message
-                self.send_discord_notification(f"Ingestion for dataset ID {self.dataset_id} did not finish normally.\n\
-                    processStateOccurrence and processStateChecklist are booth EMPTY\n\
                     Reason: {finish_reason}.\n\
                     Title: {dataset_title}\n\
                     Link: {registry_url}\n\
@@ -87,3 +96,11 @@ class CheckDataset(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget(f'/tmp/{datetime.datetime.now().date()}_crawl_info_{self.dataset_id}.json')
+#%%
+api_url='https://api.gbif.org/v1/ingestion/history/2e4cc37b-302e-4f1b-bbbb-1f674ff90e14'
+# Perform the GET request
+response = requests.get(api_url)
+# Parse the JSON response
+data = response.json()
+
+# %%
