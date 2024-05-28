@@ -2,7 +2,7 @@ name: Run IPT Inspector
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Runs at 8:00 AM every day
+    - cron: '0 8 * * 1'  # Runs at 8:00 AM every day
 jobs:
   run-my-container:
     runs-on: ubuntu-latest  # Specifies the runner environment.
